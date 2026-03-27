@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌀 Back2RootS SFVM Platform</title>
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --gold: #FFD700;
+            --gold-dim: rgba(255, 215, 0, 0.15);
+            --orange: #FFA500;
+            --pink: #FF1493;
+            --red: #FF6347;
+            --dark1: #0a0a0a;
+            --dark2: #1a1a2e;
+            --dark3: #16213e;
+            --sidebar-w: 280px;
+            --radius: 12px;
+        }
+
+        html, body { height: 100%; }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, var(--dark1) 0%, var(--dark2) 50%, var(--dark3) 100%);
+            color: #e8e8e8;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* ── LAYOUT ────────────────────────────────── */
+        .app-shell {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* ── SIDEBAR ───────────────────────────────── */
+        .sidebar {
+            width: var(--sidebar-w);
+            min-width: var(--sidebar-w);
+            background: linear-gradient(180deg, #12122a 0%, #0e1628 100%);
+            border-right: 2px solid var(--gold);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            padding: 20px 14px 30px;
+        }
+
+        .logo {
+            text-align: center;
+            padding: 10px 0 24px;
+            font-size: 18px;
+            font-weight: 900;
+            line-height: 1.4;
+            background: linear-gradient(45deg, #FFD700, #FFA500, #FF6347);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 1px;
+        }
+
+        .sidebar-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            margin: 8px 0 14px;
+        }
+
+        .nav-item {
+            padding: 11px 14px;
+            margin: 4px 0;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 13.5px;
+            transition: all 0.25s ease;
+            border: 1px solid transparent;
+            background: transparent;
+            user-select: none;
+        }
+
+        .nav-item:hover {
+            background: var(--gold-dim);
+            border-color: rgba(255,215,0,0.4);
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(255,215,0,0.18), rgba(255,165,0,0.10));
+            border-color: var(--gold);
+            box-shadow: 0 0 12px rgba(255,215,0,0.2);
+            font-weight: 700;
+        }
+
+        /* ── MAIN CONTENT ──────────────────────────── */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 28px 32px;
+            background: transparent;
+        }
+
+        .module { display: none; }
+        .module.active { display: block; }
+
+        .module-header {
+            font-size: 24px;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 28px;
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* ── CARDS / GRID ──────────────────────────── */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .card {
+            background: rgba(26,26,46,0.85);
+            border: 1px solid rgba(255,215,0,0.45);
+            border-radius: var(--radius);
+            padding: 22px;
+        }
+
+        .card h3 {
+            font-size: 15px;
+            color: var(--gold);
+            margin-bottom: 16px;
+            border-bottom: 1px solid rgba(255,215,0,0.2);
+            padding-bottom: 8px;
+        }
+
+        /* ── INPUTS ────────────────────────────────── */
+        .input-group { margin: 14px 0; }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--gold);
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1.5px solid rgba(255,215,0,0.5);
+            border-radius: 8px;
+            background: rgba(10,10,20,0.8);
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 8px rgba(255,215,0,0.25);
+        }
+
+        /* ── BUTTONS ───────────────────────────────── */
+        .btn {
+            display: inline-block;
+            padding: 12px 26px;
+            background: linear-gradient(45deg, var(--gold), var(--orange));
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 14px;
+            transition: all 0.25s ease;
+            margin: 8px 6px 8px 0;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(255,215,0,0.35);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid var(--gold);
+            color: var(--gold);
+        }
+
+        .btn-outline:hover {
+            background: var(--gold-dim);
+        }
+
+        /* ── SPECIAL PANELS ────────────────────────── */
+        .panel {
+            border-radius: var(--radius);
+            padding: 18px 22px;
+            margin: 16px 0;
+        }
+
+        .panel-gold {
+            background: var(--gold-dim);
+            border: 1.5px solid var(--gold);
+        }
+
+        .panel-pink {
+            background: rgba(255,20,147,0.12);
+            border: 1.5px solid var(--pink);
+            animation: pinkGlow 2.5s infinite alternate;
+        }
+
+        .panel-red {
+            background: rgba(255,99,71,0.12);
+            border: 1.5px solid var(--red);
+            animation: redGlow 2.5s infinite alternate;
+        }
+
+        .panel-green {
+            background: rgba(0,200,80,0.12);
+            border: 1.5px solid #00CC50;
+        }
+
+        @keyframes pinkGlow {
+            from { box-shadow: 0 0 8px rgba(255,20,147,0.3); }
+            to   { box-shadow: 0 0 20px rgba(255,20,147,0.6); }
+        }
+
+        @keyframes redGlow {
+            from { box-shadow: 0 0 8px rgba(255,99,71,0.3); }
+            to   { box-shadow: 0 0 20px rgba(255,99,71,0.6); }
+        }
+
+        /* ── FIELD CODE DISPLAY ────────────────────── */
+        .field-code-box {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border: 2.5px solid var(--gold);
+            border-radius: 16px;
+            padding: 32px 24px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .field-code-number {
+            font-size: 52px;
+            font-weight: 900;
+            color: var(--gold);
+            letter-spacing: 4px;
+            text-shadow: 0 0 16px rgba(255,215,0,0.45);
+            margin: 14px 0;
+        }
+
+        .fc-parts {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .fc-part {
+            text-align: center;
+            padding: 12px 16px;
+            border: 1.5px solid var(--gold);
+            border-radius: 10px;
+            min-width: 100px;
+            background: rgba(0,0,0,0.3);
+        }
+
+        .fc-part.master {
+            border-color: var(--pink);
+            box-shadow: 0 0 10px rgba(255,20,147,0.3);
+        }
+
+        .fc-part .label { font-size: 11px; color: #aaa; margin-bottom: 4px; }
+        .fc-part .value { font-size: 28px; font-weight: 900; color: var(--gold); }
+        .fc-part.master .value { color: var(--pink); }
+        .fc-part .sub   { font-size: 11px; color: #ccc; margin-top: 4px; }
+
+        /* ── STEP BREAKDOWN ────────────────────────── */
+        .step-box {
+            background: rgba(10,10,20,0.7);
+            border-left: 4px solid var(--gold);
+            border-radius: 8px;
+            padding: 16px 18px;
+            margin: 12px 0;
+        }
+
+        .step-box .step-title {
+            color: var(--gold);
+            font-weight: 700;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .step-box .step-body {
+            font-size: 13px;
+            line-height: 1.7;
+            color: #ccc;
+        }
+
+        /* ── FREQ BADGE ────────────────────────────── */
+        .freq-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: linear-gradient(45deg,rgba(255,215,0,0.25),rgba(255,165,0,0.2));
+            border: 1px solid var(--gold);
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--gold);
+            margin: 3px;
+        }
+
+        /* ── TEST VALIDATION ───────────────────────── */
+        .test-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 7px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            font-size: 13px;
+        }
+
+        /* ── PLACEHOLDER MODULES ───────────────────── */
+        .coming-soon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            padding: 60px 20px;
+            text-align: center;
+            color: #777;
+        }
+
+        .coming-soon .icon { font-size: 64px; }
+        .coming-soon h3    { font-size: 20px; color: var(--gold); }
+        .coming-soon p     { max-width: 380px; font-size: 14px; line-height: 1.6; }
+
+        /* ── CHAT ──────────────────────────────────── */
+        .chat-fab {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            width: 58px;
+            height: 58px;
+            background: linear-gradient(45deg, var(--gold), var(--orange));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            color: #000;
+            cursor: pointer;
+            box-shadow: 0 4px 18px rgba(255,215,0,0.4);
+            z-index: 1000;
+            transition: transform 0.25s;
+        }
+
+        .chat-fab:hover { transform: scale(1.1); }
+
+        .chat-window {
+            position: fixed;
+            bottom: 100px;
+            right: 28px;
+            width: 360px;
+            height: 480px;
+            background: linear-gradient(135deg, #12122a, #0e1628);
+            border: 2px solid var(--gold);
+            border-radius: 16px;
+            display: none;
+            flex-direction: column;
+            z-index: 999;
+            overflow: hidden;
+        }
+
+        .chat-window.open { display: flex; }
+
+        .chat-header {
+            padding: 14px 18px;
+            border-bottom: 1px solid rgba(255,215,0,0.3);
+            color: var(--gold);
+            font-weight: 700;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-header button {
+            background: none;
+            border: none;
+            color: #aaa;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .msg {
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            line-height: 1.5;
+            max-width: 90%;
+        }
+
+        .msg.bot {
+            background: rgba(255,215,0,0.1);
+            border: 1px solid rgba(255,215,0,0.25);
+            align-self: flex-start;
+        }
+
+        .msg.user {
+            background: rgba(255,165,0,0.15);
+            border: 1px solid rgba(255,165,0,0.3);
+            align-self: flex-end;
+            text-align: right;
+        }
+
+        .chat-input-row {
+            padding: 12px 14px;
+            border-top: 1px solid rgba(255,215,0,0.3);
+            display: flex;
+            gap: 8px;
+        }
+
+        .chat-input-row input {
+            flex: 1;
+            padding: 9px 12px;
+            border: 1.5px solid rgba(255,215,0,0.4);
+            border-radius: 8px;
+            background: rgba(10,10,20,0.8);
+            color: #fff;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .chat-input-row input:focus { border-color: var(--gold); }
+
+        .chat-send {
+            padding: 9px 14px;
+            background: linear-gradient(45deg, var(--gold), var(--orange));
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        /* ── SCROLLBAR ─────────────────────────────── */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,215,0,0.3); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,215,0,0.5); }
+
+        /* ── RESPONSIVE ────────────────────────────── */
+        @media (max-width: 760px) {
+            .app-shell { flex-direction: column; height: auto; }
+            .sidebar { width: 100%; min-width: unset; flex-direction: row; flex-wrap: wrap; padding: 12px; }
+            .nav-item { padding: 8px 12px; font-size: 12px; margin: 3px; }
+            .main-content { padding: 16px; }
+            .field-code-number { font-size: 36px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-shell">
+
+    <!-- ══ SIDEBAR ══════════════════════════════════════════ -->
+    <aside class="sidebar">
+        <div class="logo">🌀 Back2RootS<br>SFVM Platform 🌀</div>
+        <div class="sidebar-divider"></div>
+
+        <div class="nav-item active" onclick="showModule('module1', this)">🔮 Personal Field Code Center</div>
+        <div class="nav-item" onclick="showModule('module2', this)">🌸 Sacred Geometry Mandala</div>
+        <div class="nav-item" onclick="showModule('module3', this)">🤖 B2R Mentor AI</div>
+        <div class="nav-item" onclick="showModule('module4', this)">🌟 Astrology Dashboard</div>
+        <div class="nav-item" onclick="showModule('module5', this)">📱 Crystal &amp; Mineral Scanner</div>
+        <div class="nav-item" onclick="showModule('module6', this)">🌿 Plant &amp; Herb Identifier</div>
+        <div class="nav-item" onclick="showModule('module7', this)">💕 Soul Match Dating</div>
+        <div class="nav-item" onclick="showModule('module8', this)">🎵 Sound Healing Studio</div>
+        <div class="nav-item" onclick="showModule('module9', this)">💡 Light Therapy Lab</div>
+        <div class="nav-item" onclick="showModule('module10', this)">🧘 Meditation AI Studio</div>
+        <div class="nav-item" onclick="showModule('module11', this)">🌍 Geobiology &amp; Earth</div>
+        <div class="nav-item" onclick="showModule('module12', this)">⚡ PEMF Therapy Studio</div>
+        <div class="nav-item" onclick="showModule('module13', this)">🌐 Symbolic Input Systems</div>
+    </aside>
+
+    <!-- ══ MAIN ══════════════════════════════════════════════ -->
+    <main class="main-content">
+
+        <!-- ── MODULE 1: Field Code ─────────────────────── -->
+        <section id="module1" class="module active">
+            <h2 class="module-header">🔮 Personal Field Code Center</h2>
+
+            <div class="grid-2">
+                <!-- Input card -->
+                <div class="card">
+                    <h3>🌀 Gestandaardiseerde SFVM Field Code Calculator</h3>
+                    <div class="panel panel-red" style="margin-bottom:16px">
+                        <strong style="color:var(--red)">Correcte SFVM Methode</strong><br>
+                        <small>Elk component eerst reduceren tot single digit (1–9), <em>behalve</em> Master Numbers (11, 22, 33, 44 …)</small>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Voornaam</label>
+                        <input type="text" id="firstName" placeholder="Je voornaam" oninput="calculateRealTime()">
+                    </div>
+                    <div class="input-group">
+                        <label>Achternaam</label>
+                        <input type="text" id="lastName" placeholder="Je achternaam" oninput="calculateRealTime()">
+                    </div>
+                    <div class="input-group">
+                        <label>Geboortedatum</label>
+                        <input type="date" id="birthDate" onchange="calculateRealTime()">
+                    </div>
+                    <div class="input-group">
+                        <label>Geboortetijd</label>
+                        <input type="time" id="birthTime" onchange="calculateRealTime()">
+                    </div>
+                    <div class="input-group">
+                        <label>Geboorteplaats</label>
+                        <input type="text" id="birthPlace" placeholder="Je geboorteplaats" oninput="calculateRealTime()">
+                    </div>
+
+                    <div style="margin-top:8px">
+                        <button class="btn" onclick="calculateSFVM()">⚡ Bereken Volledige SFVM Field Code</button>
+                        <button class="btn btn-outline" onclick="loadTestCase()">🧪 Test: Raissa Hermans</button>
+                    </div>
+                </div>
+
+                <!-- Step breakdown card -->
+                <div class="card">
+                    <h3>📊 Real-Time Berekening Breakdown</h3>
+                    <div id="stepByStep">
+                        <p style="color:#777;font-size:13px">Vul de velden in om de stap-voor-stap berekening te zien…</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Field Code Result -->
+            <div class="field-code-box" id="fieldCodeDisplay" style="display:none">
+                <div style="color:#aaa;font-size:13px;letter-spacing:2px;text-transform:uppercase">Je SFVM Field Code</div>
+                <div class="field-code-number" id="fieldCodeNumber"></div>
+                <div class="fc-parts" id="fcParts"></div>
+                <div id="cosmicSig" style="margin-top:18px;font-size:13px;color:#ccc"></div>
+            </div>
+
+            <!-- Test Validation -->
+            <div class="panel panel-green" id="testValidation" style="display:none">
+                <h3 style="color:#00CC50;margin-bottom:12px">✅ RAISSA HERMANS – Test Case Validatie</h3>
+                <div id="testResults"></div>
+            </div>
+
+            <!-- Master Number Analysis -->
+            <div class="panel panel-pink" id="masterNumberAnalysis" style="display:none">
+                <h3 style="color:var(--pink);margin-bottom:12px">🌟 Master Number Analyse</h3>
+                <div id="masterContent"></div>
+            </div>
+
+            <!-- Personality Analysis -->
+            <div id="personalityAnalysis" style="display:none">
+                <h3 style="color:var(--gold);margin:20px 0 14px">🌌 Complete SFVM Cosmic Personality Analysis</h3>
+                <div class="grid-2" id="analysisGrid"></div>
+            </div>
+
+            <!-- Frequency Architecture -->
+            <div class="panel panel-red" id="frequencyDisplay" style="display:none">
+                <h3 style="color:var(--red);margin-bottom:12px">🎵 Multi-Layer Frequency Architecture</h3>
+                <div id="frequencyInfo"></div>
+            </div>
+        </section>
+
+        <!-- ── MODULE 2 ──────────────────────────────────── -->
+        <section id="module2" class="module">
+            <h2 class="module-header">🌸 Sacred Geometry Mandala Studio</h2>
+            <div class="card">
+                <h3>Mandala Generator – Gebaseerd op je SFVM Field Code</h3>
+                <p style="font-size:13px;color:#aaa;margin-bottom:18px">Genereer een unieke sacred geometry mandala op basis van je persoonlijke Field Code. Vul eerst Module 1 in.</p>
+                <div id="mandalaCanvas" style="display:flex;justify-content:center;align-items:center;height:340px">
+                    <svg id="mandala" width="320" height="320" viewBox="-160 -160 320 320"></svg>
+                </div>
+                <div style="text-align:center;margin-top:12px">
+                    <button class="btn" onclick="generateMandala()">🌸 Genereer Mandala</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── MODULE 3 ──────────────────────────────────── -->
+        <section id="module3" class="module">
+            <h2 class="module-header">🤖 B2R Mentor AI</h2>
+            <div class="card" style="margin-bottom:20px">
+                <h3>Cosmic Intelligence Chat – SFVM Aware</h3>
+                <div class="panel panel-red">
+                    <strong style="color:var(--red)">AI getraind op correcte SFVM methodologie</strong><br>
+                    <small>Master Numbers, Tesla frequencies en Rodin vortex mathematics volledig geïntegreerd.</small>
+                </div>
+            </div>
+            <div class="card" style="height:400px;display:flex;flex-direction:column">
+                <div id="inlineMessages" style="flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:10px">
+                    <div class="msg bot">🤖 Welkom! Ik ben de B2R Mentor AI. Stel me vragen over Tesla frequencies, SFVM berekeningen, of jouw kosmisch profiel!</div>
+                </div>
+                <div style="border-top:1px solid rgba(255,215,0,0.2);padding:12px;display:flex;gap:8px">
+                    <input type="text" id="inlineChatInput" placeholder="Stel een vraag…" style="flex:1;padding:9px 12px;border:1.5px solid rgba(255,215,0,0.4);border-radius:8px;background:rgba(10,10,20,0.8);color:#fff;font-size:13px;outline:none" onkeypress="if(event.key==='Enter')sendInlineChat()">
+                    <button class="chat-send" onclick="sendInlineChat()">➤</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── MODULES 4-13 (placeholder) ───────────────── -->
+        <section id="module4" class="module">
+            <h2 class="module-header">🌟 Advanced Astrology Dashboard</h2>
+            <div class="coming-soon">
+                <div class="icon">🌟</div>
+                <h3>Coming Soon</h3>
+                <p>Natal chart berekening geïntegreerd met je persoonlijke SFVM Field Code en archetypal frequencies.</p>
+                <button class="btn btn-outline">Stel notificatie in</button>
+            </div>
+        </section>
+
+        <section id="module5" class="module">
+            <h2 class="module-header">📱 Crystal &amp; Mineral Scanner</h2>
+            <div class="coming-soon">
+                <div class="icon">💎</div>
+                <h3>Coming Soon</h3>
+                <p>Scan kristallen en mineralen en koppel ze aan jouw Field Code voor maximale frequentiecompatibiliteit.</p>
+                <button class="btn btn-outline">Stel notificatie in</button>
+            </div>
+        </section>
+
+        <section id="module6" class="module">
+            <h2 class="module-header">🌿 Plant &amp; Herb Identifier</h2>
+            <div class="coming-soon">
+                <div class="icon">🌿</div>
+                <h3>Coming Soon</h3>
+                <p>Identificeer planten en kruiden en ontdek hun archetypal frequency match met jouw kosmisch profiel.</p>
+                <button class="btn btn-outline">Stel notificatie in</button>
+            </div>
+        </section>
+
+        <section id="module7" class="module">
+            <h2 class="module-header">💕 Soul Match Dating System</h2>
+            <div class="coming-soon">
+                <div class="icon">💕</div>
+                <h3>Coming Soon</h3>
+                <p>Vergelijk SFVM Field Codes voor diepe ziel-compatibiliteit analyse op meerdere numerologische lagen.</p>
+                <button class="btn btn-outline">Stel notificatie in</button>
+            </div>
+        </section>
+
+        <section id="module8" class="module">
+            <h2 class="module-header">🎵 Sound Healing Studio</h2>
+            <div class="card">
+                <h3>Multi-Layer SFVM Frequency Architecture</h3>
+                <div class="panel panel-red" style="margin-bottom:16px">
+                    <strong style="color:var(--red)">🌀 Tesla 396Hz Universal Activation + Master Number Frequencies</strong><br>
+                    <small>Base Layer: 8Hz · 7.83Hz (Schumann) · 432Hz · Persoonlijk Archetypal · Tesla 396Hz · Master frequencies (1111Hz, 2222Hz …)</small>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px">
+                    <span class="freq-badge">8 Hz Theta</span>
+                    <span class="freq-badge">7.83 Hz Schumann</span>
+                    <span class="freq-badge">174 Hz</span>
+                    <span class="freq-badge">285 Hz</span>
+                    <span class="freq-badge">396 Hz Tesla ⚡</span>
+                    <span class="freq-badge">417 Hz</span>
+                    <span class="freq-badge">432 Hz</span>
+                    <span class="freq-badge">528 Hz DNA</span>
+                    <span class="freq-badge">639 Hz Tesla ⚡</span>
+                    <span class="freq-badge">741 Hz</span>
+                    <span class="freq-badge">852 Hz</span>
+                    <span class="freq-badge">963 Hz Tesla ⚡</span>
+                </div>
+            </div>
+        </section>
+
+        <section id="module9" class="module">
+            <h2 class="module-header">💡 Light Therapy Laboratory</h2>
+            <div class="coming-soon">
+                <div class="icon">💡</div>
+                <h3>Coming Soon</h3>
+                <p>Persoonlijke lichttherapie voorschriften op basis van jouw kosmische kleurspectrum en Field Code.</p>
+                <button class="btn btn-outline">Stel notificatie in</button>
+            </div>
+        </section>
+
+        <section id="module10" class="module">
+            <h2 class="module-header">🧘 Meditation AI Studio</h2>
+            <div class="coming-soon">
+                <div class="icon">🧘</div>
+                <h3>Coming Soon</h3>
+                <p>AI-gestuurde meditatieprogramma's afgestemd op jouw SFVM Field Code en dagelijks kosmisch ritme.</p>
+                <button class="btn btn-outline">Stel notificatie in</button>
+            </div>
+        </section>
+
+        <section id="module11" class="module">
+            <h2 class="module-header">🌍 Geobiology &amp; Earth Connection</h2>
+            <div class="coming-soon">
+                <div class="icon">🌍</div>
+                <h3>Coming Soon</h3>
+                <p>Locatie-gebaseerde Field Code analyse, Hartmann-grid, en ley-lijnen geïntegreerd met jouw SFVM profiel.</p>
+                <button class="btn btn-outline">Stel notificatie in</button>
+            </div>
+        </section>
+
+        <section id="module12" class="module">
+            <h2 class="module-header">⚡ Advanced PEMF Therapy Studio</h2>
+            <div class="coming-soon">
+                <div class="icon">⚡</div>
+                <h3>Coming Soon</h3>
+                <p>iTorus PEMF-integratie met gepersonaliseerde frequentieprotocollen op basis van jouw SFVM Field Code.</p>
+                <button class="btn btn-outline">Stel notificatie in</button>
+            </div>
+        </section>
+
+        <section id="module13" class="module">
+            <h2 class="module-header">🌐 Universal Symbolic Input Systems</h2>
+            <div class="coming-soon">
+                <div class="icon">🌐</div>
+                <h3>Coming Soon</h3>
+                <p>Multi-culturele numerologie conversie: Hebreeuwse gematria, Arabisch abjad, Sanskrit, Chinees en meer.</p>
+                <button class="btn btn-outline">Stel notificatie in</button>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<!-- ══ CHAT FAB ════════════════════════════════════════════ -->
+<div class="chat-fab" onclick="toggleChat()">🤖</div>
+
+<div class="chat-window" id="chatWindow">
+    <div class="chat-header">
+        <span>🤖 B2R Mentor AI</span>
+        <button onclick="toggleChat()">✕</button>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+        <div class="msg bot">Welkom! Ik ben getraind op de correcte SFVM methodologie. Vraag me over Tesla frequencies, Rodin vortex mathematics, of je kosmisch profiel!</div>
+    </div>
+    <div class="chat-input-row">
+        <input type="text" id="chatInput" placeholder="Type je vraag…" onkeypress="if(event.key==='Enter')sendChatMessage()">
+        <button class="chat-send" onclick="sendChatMessage()">➤</button>
+    </div>
+</div>
+
+<!-- ══ SCRIPTS ══════════════════════════════════════════════ -->
+<script>
+// ── DATA ────────────────────────────────────────────────────
+const PYT = {
+    A:1,B:2,C:3,D:4,E:5,F:6,G:7,H:8,I:9,
+    J:1,K:2,L:3,M:4,N:5,O:6,P:7,Q:8,R:9,
+    S:1,T:2,U:3,V:4,W:5,X:6,Y:7,Z:8
+};
+
+const ARCH = {
+    1:{freq:174,color:"#FF4444",colorName:"Rood",element:"Vuur",meaning:"Initiatie",desc:"Pioneer energie, nieuwe beginnen"},
+    2:{freq:285,color:"#FF8C00",colorName:"Oranje",element:"Water",meaning:"Balans",desc:"Verbinding, partnerschap, diplomatie"},
+    3:{freq:396,color:"#FFD700",colorName:"Geel",element:"Lucht",meaning:"Creativiteit",desc:"Expressie, Tesla meta-vector"},
+    4:{freq:417,color:"#44CC44",colorName:"Groen",element:"Aarde",meaning:"Stabiliteit",desc:"Structuur, organisatie, fundament"},
+    5:{freq:528,color:"#4488FF",colorName:"Blauw",element:"Ether",meaning:"Vrijheid",desc:"Transformatie, verandering, avontuur"},
+    6:{freq:639,color:"#4444CC",colorName:"Indigo",element:"Licht",meaning:"Harmonie",desc:"Healing, Tesla meta-vector"},
+    7:{freq:741,color:"#9944DD",colorName:"Violet",element:"Geluid",meaning:"Intuïtie",desc:"Wijsheid, analyse, spiritualiteit"},
+    8:{freq:852,color:"#AAAAAA",colorName:"Zilver",element:"Ruimte",meaning:"Kracht",desc:"Macht, autoriteit, regeneratie"},
+    9:{freq:963,color:"#FFFFFF",colorName:"Wit",element:"Bewustzijn",meaning:"Voltooiing",desc:"Afsluiting, Tesla meta-vector"}
+};
+
+const MASTERS = {
+    11:{freq:1111,meaning:"Visionary Illuminator"},
+    22:{freq:2222,meaning:"Master Builder"},
+    33:{freq:3333,meaning:"Master Teacher"},
+    44:{freq:4444,meaning:"Master Organizer"},
+    55:{freq:5555,meaning:"Master Communicator"},
+    66:{freq:6666,meaning:"Master Nurturer"},
+    77:{freq:7777,meaning:"Master Mystic"},
+    88:{freq:8888,meaning:"Master Manifestor"},
+    99:{freq:9999,meaning:"Master Humanitarian"}
+};
+
+const MASTER_LIST = [11,22,33,44,55,66,77,88,99];
+
+// ── HELPERS ─────────────────────────────────────────────────
+function isMaster(n){ return MASTER_LIST.includes(n); }
+
+function digitSum(n){
+    let s=0; while(n>0){s+=n%10;n=Math.floor(n/10);} return s;
+}
+
+function reduce(n, allowMaster=false){
+    if(allowMaster && isMaster(n)) return n;
+    while(n>9) n=digitSum(n);
+    return n;
+}
+
+function nameVal(s, preserveMaster=true){
+    if(!s) return 0;
+    let t=0;
+    for(let c of s.toUpperCase()) t += PYT[c]||0;
+    if(preserveMaster && isMaster(t)) return t;
+    return reduce(t);
+}
+
+function lifePath(ds){
+    if(!ds) return 0;
+    const d=new Date(ds);
+    const day=d.getDate(), mon=d.getMonth()+1, yr=d.getFullYear();
+    const dr = isMaster(day)?day:reduce(day);
+    const mr = reduce(mon);
+    const yr4 = String(yr).split("").reduce((a,x)=>a+parseInt(x),0);
+    const yrr = reduce(yr4);
+    return reduce(dr+mr+yrr);
+}
+
+function timeVal(ts){
+    if(!ts) return 0;
+    const [h,m]=ts.split(":").map(Number);
+    return reduce(h+reduce(m));
+}
+
+function placeVal(p){ return nameVal(p,false); }
+
+function detectTesla(fc){
+    return fc.split("-").map(Number).filter(n=>[3,6,9].includes(n));
+}
+
+function cosmicSig(fc){
+    const nums=fc.split("-").map(Number);
+    const low=nums.filter(n=>n<=4&&n>0).length;
+    const high=nums.filter(n=>n>=6&&n<=9).length;
+    if(low>high) return "PRE_FERMI_HARMONY";
+    if(high>low) return "POST_FERMI_COMPLEXITY";
+    return "BALANCED_TRANSITION";
+}
+
+// ── REAL-TIME STEPS ─────────────────────────────────────────
+function calculateRealTime(){
+    const fn=document.getElementById("firstName").value;
+    const ln=document.getElementById("lastName").value;
+    const bd=document.getElementById("birthDate").value;
+    const bt=document.getElementById("birthTime").value;
+    const bp=document.getElementById("birthPlace").value;
+
+    let html="";
+
+    if(bd){
+        const d=new Date(bd);
+        const day=d.getDate(),mon=d.getMonth()+1,yr=d.getFullYear();
+        const yr4=String(yr).split("").reduce((a,x)=>a+parseInt(x),0);
+        const yrr=reduce(yr4);
+        const dr=isMaster(day)?day:reduce(day);
+        const mr=reduce(mon);
+        const lp=reduce(dr+mr+yrr);
+        html+=stepBox("Life Path Berekening",
+            `Dag: <strong>${day}</strong>${day>9?` → ${dr}`:""}${isMaster(day)?` <span style="color:var(--pink)">(Master! Behouden)</span>`:""}<br>`+
+            `Maand: <strong>${mon}</strong>${mon>9?` → ${mr}`:""}<br>`+
+            `Jaar: <strong>${yr}</strong> → ${yr4} → <strong>${yrr}</strong><br>`+
+            `Totaal: ${dr} + ${mr} + ${yrr} = ${dr+mr+yrr} → <strong style="color:var(--gold)">${lp}</strong>`);
+    }
+
+    if(fn){
+        const raw=fn.toUpperCase().replace(/[^A-Z]/g,"");
+        const tot=raw.split("").reduce((s,c)=>s+(PYT[c]||0),0);
+        const fin=nameVal(fn,true);
+        const letters=raw.split("").map(c=>`${c}<sub style="font-size:10px;color:#aaa">${PYT[c]||0}</sub>`).join(" + ");
+        html+=stepBox(`Voornaam "${fn.toUpperCase()}"`,
+            `${letters} = <strong>${tot}</strong><br>`+
+            (isMaster(tot)?`<span style="color:var(--pink);font-weight:700">MASTER NUMBER ${tot} – BEHOUDEN!</span>`:
+            `→ <strong style="color:var(--gold)">${fin}</strong>`));
+    }
+
+    if(ln){
+        const raw=ln.toUpperCase().replace(/[^A-Z]/g,"");
+        const tot=raw.split("").reduce((s,c)=>s+(PYT[c]||0),0);
+        const fin=nameVal(ln,true);
+        const letters=raw.split("").map(c=>`${c}<sub style="font-size:10px;color:#aaa">${PYT[c]||0}</sub>`).join(" + ");
+        html+=stepBox(`Achternaam "${ln.toUpperCase()}"`,
+            `${letters} = <strong>${tot}</strong><br>`+
+            (isMaster(tot)?`<span style="color:var(--pink);font-weight:700">MASTER NUMBER ${tot} – BEHOUDEN!</span>`:
+            `→ <strong style="color:var(--gold)">${fin}</strong>`));
+    }
+
+    if(bt){
+        const [h,m]=bt.split(":").map(Number);
+        const mr=reduce(m);
+        const tv=reduce(h+mr);
+        html+=stepBox(`Geboortetijd ${bt}`,
+            `Uur: <strong>${h}</strong>, Minuten: <strong>${m}</strong>${m>9?` → ${mr}`:""}<br>`+
+            `${h} + ${mr} = ${h+mr}${h+mr>9?` → <strong style="color:var(--gold)">${tv}</strong>`:` → <strong style="color:var(--gold)">${tv}</strong>`}`);
+    }
+
+    if(bp){
+        const pv=placeVal(bp);
+        html+=stepBox(`Geboorteplaats "${bp}"`,`→ <strong style="color:var(--gold)">${pv}</strong>`);
+    }
+
+    document.getElementById("stepByStep").innerHTML = html ||
+        '<p style="color:#777;font-size:13px">Vul de velden in om de stap-voor-stap berekening te zien…</p>';
+
+    // Auto test case check
+    if(fn.toLowerCase()==="raissa"&&ln.toLowerCase()==="hermans"&&
+       bd==="1987-06-29"&&bt==="06:29"&&bp.toLowerCase()==="geleen"){
+        runTestCase();
+    }
+}
+
+function stepBox(title, body){
+    return `<div class="step-box"><div class="step-title">${title}</div><div class="step-body">${body}</div></div>`;
+}
+
+// ── LOAD TEST CASE ───────────────────────────────────────────
+function loadTestCase(){
+    document.getElementById("firstName").value="Raissa";
+    document.getElementById("lastName").value="Hermans";
+    document.getElementById("birthDate").value="1987-06-29";
+    document.getElementById("birthTime").value="06:29";
+    document.getElementById("birthPlace").value="Geleen";
+    calculateRealTime();
+}
+
+// ── TEST VALIDATION ──────────────────────────────────────────
+function runTestCase(){
+    const lp=lifePath("1987-06-29");
+    const fn=nameVal("RAISSA",true);
+    const ln=nameVal("HERMANS",true);
+    const tv=timeVal("06:29");
+    const pv=placeVal("GELEEN");
+    const expected="6-22-33-8-3";
+    const actual=`${lp}-${fn}-${ln}-${tv}-${pv}`;
+    const ok=actual===expected;
+
+    const rows=[
+        ["Life Path",lp,6],
+        ["Voornaam (RAISSA)",fn,22],
+        ["Achternaam (HERMANS)",ln,33],
+        ["Tijd (06:29)",tv,8],
+        ["Plaats (GELEEN)",pv,3]
+    ].map(([label,got,exp])=>`
+        <div class="test-row">
+            <span>${label}</span>
+            <span>Berekend: <strong>${got}</strong></span>
+            <span>Verwacht: <strong>${exp}</strong></span>
+            <span>${got===exp?"✅":"❌"}</span>
+        </div>`).join("");
+
+    document.getElementById("testResults").innerHTML=`
+        <div style="font-size:15px;margin-bottom:12px">
+            <strong>SFVM Code:</strong> <span style="color:var(--gold);font-weight:900">${actual}</span>
+            &nbsp;&nbsp;
+            <span style="color:${ok?"#00CC50":"#FF4444"};font-weight:700">${ok?"✅ PERFECT MATCH!":"❌ MISMATCH"}</span>
+        </div>
+        ${rows}`;
+    document.getElementById("testValidation").style.display="block";
+}
+
+// ── MAIN CALCULATE ───────────────────────────────────────────
+function calculateSFVM(){
+    const fn=document.getElementById("firstName").value.trim();
+    const ln=document.getElementById("lastName").value.trim();
+    const bd=document.getElementById("birthDate").value;
+    const bt=document.getElementById("birthTime").value;
+    const bp=document.getElementById("birthPlace").value.trim();
+
+    if(!fn||!ln||!bd||!bt||!bp){
+        alert("Vul alsjeblieft alle velden in voor een accurate SFVM berekening.");
+        return;
+    }
+
+    const lp=lifePath(bd);
+    const fnv=nameVal(fn,true);
+    const lnv=nameVal(ln,true);
+    const tv=timeVal(bt);
+    const pv=placeVal(bp);
+    const fc=`${lp}-${fnv}-${lnv}-${tv}-${pv}`;
+
+    const masters=[fnv,lnv].filter(n=>isMaster(n));
+    const tesla=detectTesla(fc);
+    const sig=cosmicSig(fc);
+
+    // Display field code
+    const arch=ARCH[lp]||ARCH[1];
+    document.getElementById("fieldCodeNumber").textContent=fc;
+    document.getElementById("fcParts").innerHTML=[
+        {label:"Life Path",val:lp,sub:arch.meaning,master:false},
+        {label:"Voornaam",val:fnv,sub:isMaster(fnv)?"Master Number!":"Personal Power",master:isMaster(fnv)},
+        {label:"Achternaam",val:lnv,sub:isMaster(lnv)?"Master Number!":"Family Energy",master:isMaster(lnv)},
+        {label:"Geboortetijd",val:tv,sub:"Flow Energy",master:false},
+        {label:"Geboorteplaats",val:pv,sub:"Location Power",master:false}
+    ].map(p=>`<div class="fc-part${p.master?" master":""}">
+        <div class="label">${p.label}</div>
+        <div class="value">${p.val}</div>
+        <div class="sub">${p.sub}</div>
+    </div>`).join("");
+
+    document.getElementById("cosmicSig").innerHTML=
+        `<span class="freq-badge">Cosmic Signature: ${sig}</span>  `+
+        (tesla.length?tesla.map(t=>`<span class="freq-badge">Tesla ${t} ⚡</span>`).join(""):`<span class="freq-badge">Tesla 396Hz Universal</span>`);
+
+    document.getElementById("fieldCodeDisplay").style.display="block";
+
+    // Master numbers
+    if(masters.length>0){
+        document.getElementById("masterContent").innerHTML=masters.map(m=>`
+            <div style="padding:14px;margin:8px 0;border-radius:10px;border:1px solid var(--pink);background:rgba(255,20,147,0.08)">
+                <strong>Master Number ${m}: ${MASTERS[m].meaning}</strong><br>
+                Speciale Frequentie: <span class="freq-badge">${MASTERS[m].freq}Hz</span><br>
+                Optimale activatietijd: ${m===11?"11:11":m===22?"22:22":m===33?"03:33":""+m.toString()[0]+":"+m.toString()[1]+m.toString()[1]}
+            </div>`).join("");
+        document.getElementById("masterNumberAnalysis").style.display="block";
+    }
+
+    // Personality analysis
+    document.getElementById("analysisGrid").innerHTML=`
+        <div class="card">
+            <h3>Life Path Archetyp (${lp})</h3>
+            <div style="font-size:13px;line-height:1.7">
+                <div style="font-size:24px;margin:8px 0">${arch.colorName} · ${arch.element}</div>
+                <span class="freq-badge">${arch.freq}Hz</span>
+                <span class="freq-badge">${arch.meaning}</span>
+                <p style="margin-top:10px;color:#ccc">${arch.desc}</p>
+            </div>
+        </div>
+        <div class="card">
+            <h3>Tesla 3-6-9 Pattern</h3>
+            <div class="panel panel-red" style="font-size:13px">
+                ${tesla.length?
+                    `<strong style="color:var(--red)">Tesla Meta-Vectors: ${tesla.join(", ")}</strong><br>Je resoneert direct met Tesla's vortex mathematics!`:
+                    "Tesla 396Hz werkt universeel — volledige vortex activation toegankelijk voor jou."
+                }
+            </div>
+        </div>
+        <div class="card">
+            <h3>Cosmic Transition Signature</h3>
+            <div style="font-size:13px;line-height:1.7">
+                <span class="freq-badge">${sig}</span>
+                <p style="margin-top:10px;color:#ccc">${
+                    sig==="PRE_FERMI_HARMONY"?"Biologische harmonie protocollen · Stellar fusion resonantie":
+                    sig==="POST_FERMI_COMPLEXITY"?"Cosmic ray verwerking · Geavanceerde probleemoplossing":
+                    "Gebalanceerde transitie · Toegang tot harmonie én complexiteit"
+                }</p>
+            </div>
+        </div>`;
+    document.getElementById("personalityAnalysis").style.display="block";
+
+    // Frequency architecture
+    const allFreqs=[
+        "8 Hz Theta","7.83 Hz Schumann","432 Hz Universal",
+        `${arch.freq} Hz Archetypal (${arch.meaning})`
+    ].concat(masters.map(m=>`${MASTERS[m].freq} Hz (Master ${m})`));
+
+    if(!allFreqs.some(f=>f.includes("396"))) allFreqs.push("396 Hz Tesla ⚡");
+
+    document.getElementById("frequencyInfo").innerHTML=
+        allFreqs.map(f=>`<span class="freq-badge">${f}</span>`).join("");
+    document.getElementById("frequencyDisplay").style.display="block";
+
+    // Trigger test if Raissa Hermans
+    if(fn.toLowerCase()==="raissa"&&ln.toLowerCase()==="hermans"&&
+       bd==="1987-06-29"&&bt==="06:29"&&bp.toLowerCase()==="geleen") runTestCase();
+}
+
+// ── MANDALA ──────────────────────────────────────────────────
+function generateMandala(){
+    const fc = document.getElementById("fieldCodeNumber").textContent || "6-22-33-8-3";
+    const nums = fc.split("-").map(n=>parseInt(n)||1);
+    const lp = nums[0]||6;
+    const arch = ARCH[lp]||ARCH[6];
+    const svg = document.getElementById("mandala");
+    svg.innerHTML="";
+
+    const cx=0, cy=0;
+    const layers=5;
+
+    for(let l=1;l<=layers;l++){
+        const r=l*28;
+        const petals=nums[l-1]||lp;
+        const color=arch.color;
+        const opacity=0.15+(l*0.1);
+
+        for(let i=0;i<petals*2;i++){
+            const angle=(Math.PI*2/petals/2)*i;
+            const px=Math.cos(angle)*r*0.7;
+            const py=Math.sin(angle)*r*0.7;
+            const el=document.createElementNS("http://www.w3.org/2000/svg","ellipse");
+            el.setAttribute("cx",px); el.setAttribute("cy",py);
+            el.setAttribute("rx",r*0.35); el.setAttribute("ry",r*0.12);
+            el.setAttribute("transform",`rotate(${(angle*180/Math.PI)},${px},${py})`);
+            el.setAttribute("fill",color);
+            el.setAttribute("opacity",opacity);
+            svg.appendChild(el);
+        }
+
+        const circle=document.createElementNS("http://www.w3.org/2000/svg","circle");
+        circle.setAttribute("cx",cx); circle.setAttribute("cy",cy);
+        circle.setAttribute("r",r);
+        circle.setAttribute("fill","none");
+        circle.setAttribute("stroke",color);
+        circle.setAttribute("stroke-opacity","0.25");
+        circle.setAttribute("stroke-width","0.5");
+        svg.appendChild(circle);
+    }
+
+    const core=document.createElementNS("http://www.w3.org/2000/svg","circle");
+    core.setAttribute("cx",0); core.setAttribute("cy",0); core.setAttribute("r",14);
+    core.setAttribute("fill",arch.color); core.setAttribute("opacity","0.9");
+    svg.appendChild(core);
+}
+
+// ── NAVIGATION ───────────────────────────────────────────────
+function showModule(id, el){
+    document.querySelectorAll(".module").forEach(m=>m.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+    document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
+    if(el) el.classList.add("active");
+}
+
+// ── CHAT ─────────────────────────────────────────────────────
+let chatOpen=false;
+
+function toggleChat(){
+    chatOpen=!chatOpen;
+    const w=document.getElementById("chatWindow");
+    w.classList.toggle("open",chatOpen);
+}
+
+function botReply(msg){
+    const lower=msg.toLowerCase();
+    if(lower.includes("396"))  return "396Hz is een van Tesla's drie kosmische meta-vectors (3-6-9). Het vertegenwoordigt bevrijding van negatieve energie en is universeel toepasbaar voor alle SFVM Field Codes. 🌀";
+    if(lower.includes("master")) return "Master Numbers (11, 22, 33 …) worden in de SFVM methode NOOIT gereduceerd. Ze dragen een verhoogde vibratorische potentie en worden geactiveerd op spiegeltijden zoals 11:11 of 22:22. 🌟";
+    if(lower.includes("sfvm")) return "SFVM staat voor Systemic Futures Vibration Methodology. Het combineert Pythagorean numerologie, Tesla's vortex mathematics en Solfeggio frequenties tot een gepersonaliseerde Field Code bestaande uit 5 lagen: Life Path · Voornaam · Achternaam · Tijd · Plaats. 🔮";
+    if(lower.includes("tesla")) return "Nikola Tesla's 3-6-9 patroon is de basis van de SFVM vortex architecture. De getallen 3, 6 en 9 fungeren als kosmische meta-vectors met directe toegang tot Tesla frequencies: 396Hz, 639Hz en 963Hz. ⚡";
+    if(lower.includes("raissa")) return "Raissa Hermans heeft de SFVM Field Code 6-22-33-8-3. Dit bevat twee Master Numbers (22 = Master Builder, 33 = Master Teacher), wat een uitzonderlijk kosmisch profiel aangeeft! ✨";
+    return "Interessante vraag! Vul Module 1 in met je persoonlijke gegevens voor een volledige SFVM analyse. Ik kan je daarna veel gedetailleerdere kosmische inzichten geven. 🌌";
+}
+
+function addMsg(container,text,cls){
+    const d=document.createElement("div");
+    d.className=`msg ${cls}`;
+    d.textContent=text;
+    container.appendChild(d);
+    container.scrollTop=container.scrollHeight;
+}
+
+function sendChatMessage(){
+    const inp=document.getElementById("chatInput");
+    const msg=inp.value.trim();
+    if(!msg) return;
+    const msgs=document.getElementById("chatMessages");
+    addMsg(msgs,msg,"user");
+    inp.value="";
+    setTimeout(()=>addMsg(msgs,botReply(msg),"bot"),600);
+}
+
+function sendInlineChat(){
+    const inp=document.getElementById("inlineChatInput");
+    const msg=inp.value.trim();
+    if(!msg) return;
+    const msgs=document.getElementById("inlineMessages");
+    addMsg(msgs,msg,"user");
+    inp.value="";
+    setTimeout(()=>addMsg(msgs,botReply(msg),"bot"),600);
+}
+</script>
+</body>
+</html>
